@@ -1,63 +1,84 @@
-# DROID — Agentic Workspace
+# DROID — task & review workspace
 
-A focused, aesthetic UI for an **agentic development app** — a place where coding
-agents run, not a full IDE. Think "Codex app for your codebase," with a calmer,
-warmer visual language. Ships as a native **Electron desktop app for macOS**.
+A clean desktop app for **delegating coding tasks to Factory Droid and reviewing
+the results safely**. Not an IDE — a Codex / T3-Code-style task-and-review app
+where the [Factory Droid CLI](https://docs.factory.ai/) does the work, Git is the
+source of truth for diffs, and a local backend manages the process.
 
-## Design direction
+## How it works
 
-The interface blends three references:
+```
+Electron shell
+  └─ React + Vite UI  ──WebSocket──▶  local Node backend
+                                        ├─ SQLite (sessions / turns / events / checkpoints)
+                                        ├─ Git manager (checkpoint · diff · stage · revert · commit)
+                                        └─ Provider manager
+                                             ├─ factory-droid →  droid exec --output-format debug "<task>"
+                                             └─ simulated     →  fallback when the CLI isn't installed
+```
 
-- **A touch of Factory.ai** — a single restrained warm-amber accent and
-  monospace precision for code/CLI, *without* the full near-monochrome brutalist
-  scheme.
-- **Cursor's calm warmth** — warm charcoal surfaces (never pure black), generous
-  spacing, editorial typography, and pastel "timeline" accents for agent steps.
-- **Codex's multi-agent model** — a sessions sidebar where each run lives with its
-  own status/progress, plus a Codex-style task/steering panel.
+**Flow:** pick a repo → create a task → backend takes a git checkpoint → runs the
+agent in the repo → streams normalized events to the UI → reads the git diff →
+you **Accept** (commit), **Revert** (restore checkpoint), or **revise** (ask Droid
+a follow-up in the composer).
 
-### Principles
+You log in once with `droid`; the app **never stores Factory API keys**. If the
+`droid` CLI isn't on `PATH`, a built-in **simulated provider** streams realistic
+events and makes real file edits so the whole task→review→accept flow is usable.
 
-- Refined **dark** theme tuned for long agent runs (warm neutrals, low eye strain).
-- **Minimal icons** — the layout leans on typography and space.
-- One signature **muted burnt-amber accent**, used sparingly (active states, run
-  status, primary CTA) — a *touch* of Factory, never neon.
-- Mono **only** for code and CLI output.
+## Screens
 
-## Layout (the "first screen")
+- **Sidebar** — project switcher, prominent **New task**, sessions with live status.
+- **Task thread** (center) — the user prompt + a live timeline of agent events
+  (plan / explore / edit / command / summary), with a follow-up composer.
+- **Review pane** (right) — changed files, per-file colored diff, **Accept / Revert**.
+- **Raw log** (bottom) — collapsible stdout/stderr. The terminal is *secondary*.
+- **Settings** — detected providers + add a project by path.
 
-| Region | Purpose |
-| --- | --- |
-| **Left sidebar** | Workspace + agent **sessions** list with live status dots and progress |
-| **Center** | The active **agent run** — a timeline of plan / search / edit / run steps, code + diffs, and a steering composer |
-| **Right panel** | Codex-style **Tasks** (open vs done) and **Changes** (files + diff stats) |
+## Design
 
-## Stack
+Refined warm-dark theme, a single muted burnt-amber accent, mono only for code/CLI.
+Design tokens live in `src/index.css`.
 
-- React + TypeScript + Vite
-- Tailwind CSS v4 (design tokens in `src/index.css`)
-- Electron + electron-builder (native macOS app)
-
-## Develop (web)
+## Develop
 
 ```bash
 npm install
-npm run dev      # vite dev server
-npm run build    # type-check + production build
-npm run lint     # eslint
+npm run dev:all   # backend (ws://localhost:8787) + vite dev server together
+npm run dev       # vite only
+npm run server    # backend only (Node >= 22.5 — uses built-in node:sqlite)
+npm run lint
+npm run build           # typecheck + production frontend build
+npm run typecheck:server
 ```
+
+Open the Vite URL; the UI connects to the backend over WebSocket and auto-seeds a
+throwaway `sample-project` git repo so you can try a task immediately.
 
 ## Desktop (Electron, macOS)
 
 ```bash
-npm run electron:dev   # vite + electron together (live reload)
-npm run dist:mac       # build a signed .dmg  ← run this on macOS
+npm run electron:dev   # backend + vite + electron together
+npm run dist:mac       # build a .dmg  ← must run on macOS
 ```
 
-The macOS window uses hidden-inset traffic lights over a custom draggable
-titlebar (`titleBarStyle: 'hiddenInset'`) and sidebar vibrancy. The Electron
-main/preload live in `electron/`. `npm run dist:mac` must run **on macOS** —
-electron-builder cannot produce a Mac `.dmg` on Linux/Windows.
+Electron spawns the backend with system Node (so `node:sqlite` is available
+regardless of Electron's bundled Node), loads the Vite dev server in dev and the
+built assets in production, and uses hidden-inset traffic lights over a draggable
+titlebar. `npm run dist:mac` must run **on macOS** — electron-builder cannot
+produce a Mac `.dmg` on Linux/Windows.
 
-> The screen is driven by mock data in `src/data.ts` — this is a UI/UX
-> design surface, not a wired-up backend.
+## Layout on disk
+
+```
+server/            local backend
+  index.ts         http + WebSocket server, message handling, run lifecycle
+  db.ts            node:sqlite store (sessions / turns / events / checkpoints)
+  git.ts           checkpoint · changed files · per-file diff · commit · revert
+  providers/       agent provider abstraction
+    factoryDroid.ts  droid exec adapter
+    simulated.ts     realistic fallback that makes real edits
+shared/protocol.ts WebSocket message + entity types (shared by UI and server)
+src/               React UI (client store, screens, components)
+electron/          desktop shell
+```

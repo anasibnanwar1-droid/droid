@@ -25,3 +25,6 @@ dist-ssr
 
 # Electron build output
 release
+
+# bundled electron backend
+dist-electron

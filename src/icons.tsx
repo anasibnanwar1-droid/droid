@@ -99,3 +99,44 @@ export const Dot = (p: IconProps) => (
   </svg>
 )
 
+export const Folder = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+  </svg>
+)
+
+export const FileText = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" />
+    <path d="M14 3v5h5M9 13h6M9 17h6" />
+  </svg>
+)
+
+export const Undo = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M9 7 4 12l5 5" />
+    <path d="M4 12h11a5 5 0 0 1 5 5v0" />
+  </svg>
+)
+
+export const Stop = (p: IconProps) => (
+  <svg {...base(p)} fill="currentColor" stroke="none">
+    <rect x="6" y="6" width="12" height="12" rx="2" />
+  </svg>
+)
+
+export const Sliders = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h7M15 18h5" />
+    <circle cx="16" cy="6" r="2" />
+    <circle cx="8" cy="12" r="2" />
+    <circle cx="13" cy="18" r="2" />
+  </svg>
+)
+
+export const Spinner = (p: IconProps) => (
+  <svg {...base(p)} className={`animate-spin ${p.className ?? ''}`}>
+    <path d="M12 3a9 9 0 1 0 9 9" />
+  </svg>
+)
+

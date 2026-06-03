@@ -1,113 +1,120 @@
-import type { RunStatus, Session } from '../data'
-import { sessions } from '../data'
+import { store, useStore } from '../client/store'
+import { statusMeta, timeAgo } from '../lib/ui'
+import { Folder, Plus, ChevronDown, Dot } from '../icons'
 
-const statusColor: Record<RunStatus, string> = {
-  running: 'text-running',
-  review: 'text-info',
-  done: 'text-success',
-  queued: 'text-queued',
-  error: 'text-error',
-}
+export function Sidebar({ onNewTask, onOpenSettings }: { onNewTask: () => void; onOpenSettings: () => void }) {
+  const projects = useStore((s) => s.projects)
+  const activeProjectId = useStore((s) => s.activeProjectId)
+  const sessionsByProject = useStore((s) => s.sessionsByProject)
+  const activeSessionId = useStore((s) => s.activeSessionId)
+  const connected = useStore((s) => s.connected)
 
-const statusLabel: Record<RunStatus, string> = {
-  running: 'Running',
-  review: 'Needs review',
-  done: 'Done',
-  queued: 'Queued',
-  error: 'Failed',
-}
+  const project = projects.find((p) => p.id === activeProjectId) ?? null
+  const sessions = activeProjectId ? sessionsByProject[activeProjectId] ?? [] : []
 
-function StatusDot({ status }: { status: RunStatus }) {
   return (
-    <span className="relative flex h-2 w-2 shrink-0">
-      {status === 'running' && (
-        <span className="absolute inline-flex h-full w-full rounded-full bg-running opacity-60 animate-ping" />
-      )}
-      <span
-        className={`relative inline-flex h-2 w-2 rounded-full ${statusColor[status]}`}
-        style={{ background: 'currentColor' }}
-      />
-    </span>
-  )
-}
+    <aside className="flex h-full w-[272px] shrink-0 flex-col border-r border-[var(--color-line)] bg-[var(--color-surface)]">
+      {/* project switcher */}
+      <div className="app-no-drag px-3 pt-3">
+        <label className="mb-1 block px-1 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">
+          Project
+        </label>
+        <div className="relative">
+          <Folder className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]" />
+          <select
+            value={activeProjectId ?? ''}
+            onChange={(e) => store.selectProject(e.target.value)}
+            className="w-full appearance-none rounded-[var(--radius)] border border-[var(--color-line)] bg-[var(--color-surface-2)] py-2 pl-8 pr-8 text-sm text-[var(--color-ink)] outline-none transition-colors hover:border-[var(--color-line-strong)] focus:border-[var(--color-accent)]"
+          >
+            {projects.length === 0 && <option value="">No projects</option>}
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]" />
+        </div>
+        {project && (
+          <p className="mt-1 truncate px-1 font-mono text-[11px] text-[var(--color-ink-faint)]" title={project.path}>
+            {project.path}
+          </p>
+        )}
+      </div>
 
-function SessionRow({ session, active }: { session: Session; active: boolean }) {
-  return (
-    <button
-      className={`group w-full rounded-lg px-2.5 py-2 text-left transition-colors ${
-        active ? 'bg-surface-3' : 'hover:bg-surface-2'
-      }`}
-    >
-      <div className="flex items-center gap-2">
-        <StatusDot status={session.status} />
-        <span
-          className={`flex-1 truncate text-[13px] font-medium ${
-            active ? 'text-ink' : 'text-ink-soft group-hover:text-ink'
-          }`}
+      {/* New task — prominent, single primary action */}
+      <div className="app-no-drag px-3 pb-2 pt-3">
+        <button
+          onClick={onNewTask}
+          disabled={!project}
+          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius)] bg-[var(--color-accent)] py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {session.title}
-        </span>
-        <span className="text-[11px] tabular-nums text-ink-faint">{session.updated}</span>
-      </div>
-      <div className="mt-1 flex items-center gap-1.5 pl-4">
-        <span className="truncate font-mono text-[11px] text-ink-muted">{session.repo}</span>
-        <span className="text-ink-faint">·</span>
-        <span className={`text-[11px] ${statusColor[session.status]}`}>{statusLabel[session.status]}</span>
-      </div>
-      {session.status === 'running' && session.progress != null && (
-        <div className="mt-2 ml-4 h-[3px] overflow-hidden rounded-full bg-surface-3">
-          <div
-            className="h-full rounded-full bg-running transition-all"
-            style={{ width: `${Math.round(session.progress * 100)}%` }}
-          />
-        </div>
-      )}
-    </button>
-  )
-}
-
-export default function Sidebar({ activeId }: { activeId: string }) {
-  return (
-    <aside className="flex h-full w-[272px] shrink-0 flex-col border-r border-line-soft bg-surface">
-      {/* Wordmark + workspace — no icons */}
-      <div className="px-4 pb-3 pt-4">
-        <div className="flex items-baseline gap-2">
-          <span className="text-[15px] font-bold tracking-[0.18em] text-ink">DROID</span>
-          <span className="text-[11px] tracking-wide text-ink-faint">workspace</span>
-        </div>
-        <div className="mt-0.5 text-[11px] text-ink-muted">anwar-labs</div>
-      </div>
-
-      {/* New run — text only */}
-      <div className="px-3 pb-3">
-        <button className="w-full rounded-lg bg-accent px-3 py-2 text-[13px] font-semibold text-ink transition-colors hover:bg-accent-hover">
-          New run
+          <Plus width={15} height={15} />
+          New task
         </button>
       </div>
 
-      {/* Sessions */}
-      <div className="flex items-center justify-between px-4 pb-1.5 pt-1">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">Sessions</span>
-        <span className="rounded-full bg-surface-2 px-1.5 py-0.5 text-[10px] font-medium text-ink-muted">
-          {sessions.length}
+      {/* sessions */}
+      <div className="mt-1 flex min-h-0 flex-1 flex-col">
+        <div className="px-4 pb-1 pt-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">
+          Sessions
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+          {sessions.length === 0 ? (
+            <p className="px-2 py-6 text-center text-[13px] leading-relaxed text-[var(--color-ink-faint)]">
+              No sessions yet.
+              <br />
+              Create a task to get started.
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-0.5">
+              {sessions.map((s) => {
+                const meta = statusMeta[s.status]
+                const active = s.id === activeSessionId
+                return (
+                  <li key={s.id}>
+                    <button
+                      onClick={() => store.openSession(s.id)}
+                      className={`app-no-drag group flex w-full flex-col gap-1 rounded-[var(--radius)] px-2.5 py-2 text-left transition-colors ${
+                        active ? 'bg-[var(--color-surface-3)]' : 'hover:bg-[var(--color-surface-2)]'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <span
+                          className={`truncate text-[13px] ${active ? 'text-[var(--color-ink)]' : 'text-[var(--color-ink-soft)]'}`}
+                        >
+                          {s.title}
+                        </span>
+                      </span>
+                      <span className="flex items-center gap-1 text-[11px] text-[var(--color-ink-faint)]">
+                        <Dot width={8} height={8} style={{ color: meta.dot }} />
+                        <span style={{ color: meta.color }}>{meta.label}</span>
+                        <span className="text-[var(--color-ink-faint)]">· {timeAgo(s.updatedAt)}</span>
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {/* footer */}
+      <div className="app-no-drag flex items-center justify-between border-t border-[var(--color-line)] px-3 py-2.5">
+        <button
+          onClick={onOpenSettings}
+          className="text-[13px] text-[var(--color-ink-muted)] transition-colors hover:text-[var(--color-ink)]"
+        >
+          Settings
+        </button>
+        <span className="flex items-center gap-1.5 text-[11px] text-[var(--color-ink-faint)]">
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ background: connected ? 'var(--color-success)' : 'var(--color-error)' }}
+          />
+          {connected ? 'Connected' : 'Offline'}
         </span>
-      </div>
-
-      <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-3">
-        {sessions.map((s) => (
-          <SessionRow key={s.id} session={s} active={s.id === activeId} />
-        ))}
-      </div>
-
-      {/* Footer — avatar + name, no icons */}
-      <div className="flex items-center gap-2.5 border-t border-line-soft px-4 py-2.5">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-3 text-[12px] font-semibold text-ink-soft">
-          A
-        </div>
-        <div className="leading-tight">
-          <div className="text-[12px] font-medium text-ink">Anas</div>
-          <div className="text-[11px] text-ink-muted">Pro workspace</div>
-        </div>
       </div>
     </aside>
   )
