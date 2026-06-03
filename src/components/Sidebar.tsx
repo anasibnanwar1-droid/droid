@@ -1,6 +1,5 @@
 import type { RunStatus, Session } from '../data'
 import { sessions } from '../data'
-import { Plus, Search, Layers, Settings } from '../icons'
 
 const statusColor: Record<RunStatus, string> = {
   running: 'text-running',
@@ -24,7 +23,10 @@ function StatusDot({ status }: { status: RunStatus }) {
       {status === 'running' && (
         <span className="absolute inline-flex h-full w-full rounded-full bg-running opacity-60 animate-ping" />
       )}
-      <span className={`relative inline-flex h-2 w-2 rounded-full ${statusColor[status]}`} style={{ background: 'currentColor' }} />
+      <span
+        className={`relative inline-flex h-2 w-2 rounded-full ${statusColor[status]}`}
+        style={{ background: 'currentColor' }}
+      />
     </span>
   )
 }
@@ -67,34 +69,25 @@ function SessionRow({ session, active }: { session: Session; active: boolean }) 
 export default function Sidebar({ activeId }: { activeId: string }) {
   return (
     <aside className="flex h-full w-[272px] shrink-0 flex-col border-r border-line-soft bg-surface">
-      {/* Brand + workspace */}
-      <div className="flex items-center gap-2.5 px-4 pb-3 pt-4">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-bg">
-          <span className="text-[15px] font-bold leading-none">◆</span>
+      {/* Wordmark + workspace — no icons */}
+      <div className="px-4 pb-3 pt-4">
+        <div className="flex items-baseline gap-2">
+          <span className="text-[15px] font-bold tracking-[0.18em] text-ink">DROID</span>
+          <span className="text-[11px] tracking-wide text-ink-faint">workspace</span>
         </div>
-        <div className="flex-1">
-          <div className="text-[13px] font-semibold leading-tight text-ink">Forge</div>
-          <div className="text-[11px] leading-tight text-ink-muted">anwar-labs</div>
-        </div>
-        <button className="flex h-6 w-6 items-center justify-center rounded text-ink-muted hover:bg-surface-2 hover:text-ink">
-          <Search width={15} height={15} />
-        </button>
+        <div className="mt-0.5 text-[11px] text-ink-muted">anwar-labs</div>
       </div>
 
-      {/* New run */}
+      {/* New run — text only */}
       <div className="px-3 pb-3">
-        <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2 text-[13px] font-semibold text-bg transition-colors hover:bg-accent-hover">
-          <Plus width={15} height={15} strokeWidth={2.2} />
+        <button className="w-full rounded-lg bg-accent px-3 py-2 text-[13px] font-semibold text-ink transition-colors hover:bg-accent-hover">
           New run
         </button>
       </div>
 
       {/* Sessions */}
       <div className="flex items-center justify-between px-4 pb-1.5 pt-1">
-        <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
-          <Layers width={13} height={13} />
-          Sessions
-        </div>
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">Sessions</span>
         <span className="rounded-full bg-surface-2 px-1.5 py-0.5 text-[10px] font-medium text-ink-muted">
           {sessions.length}
         </span>
@@ -106,18 +99,15 @@ export default function Sidebar({ activeId }: { activeId: string }) {
         ))}
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center gap-2.5 border-t border-line-soft px-3 py-2.5">
+      {/* Footer — avatar + name, no icons */}
+      <div className="flex items-center gap-2.5 border-t border-line-soft px-4 py-2.5">
         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-3 text-[12px] font-semibold text-ink-soft">
           A
         </div>
-        <div className="flex-1 leading-tight">
+        <div className="leading-tight">
           <div className="text-[12px] font-medium text-ink">Anas</div>
           <div className="text-[11px] text-ink-muted">Pro workspace</div>
         </div>
-        <button className="flex h-7 w-7 items-center justify-center rounded-md text-ink-muted hover:bg-surface-2 hover:text-ink">
-          <Settings width={16} height={16} />
-        </button>
       </div>
     </aside>
   )

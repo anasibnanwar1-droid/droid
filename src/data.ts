@@ -43,7 +43,7 @@ export const sessions: Session[] = [
   {
     id: 's1',
     title: 'Add OAuth device-flow login',
-    repo: 'forge/api',
+    repo: 'droid/api',
     branch: 'feat/device-flow',
     status: 'running',
     mode: 'Cloud',
@@ -53,7 +53,7 @@ export const sessions: Session[] = [
   {
     id: 's2',
     title: 'Migrate billing tables to Postgres 16',
-    repo: 'forge/data',
+    repo: 'droid/data',
     branch: 'chore/pg16',
     status: 'review',
     mode: 'Worktree',
@@ -62,7 +62,7 @@ export const sessions: Session[] = [
   {
     id: 's3',
     title: 'Refactor websocket reconnect logic',
-    repo: 'forge/realtime',
+    repo: 'droid/realtime',
     branch: 'fix/ws-reconnect',
     status: 'done',
     mode: 'Cloud',
@@ -71,7 +71,7 @@ export const sessions: Session[] = [
   {
     id: 's4',
     title: 'Generate e2e tests for checkout',
-    repo: 'forge/web',
+    repo: 'droid/web',
     branch: 'test/checkout-e2e',
     status: 'queued',
     mode: 'Local',
@@ -80,7 +80,7 @@ export const sessions: Session[] = [
   {
     id: 's5',
     title: 'Investigate flaky CI on arm64 runners',
-    repo: 'forge/infra',
+    repo: 'droid/infra',
     branch: 'ci/arm64-flake',
     status: 'error',
     mode: 'Cloud',

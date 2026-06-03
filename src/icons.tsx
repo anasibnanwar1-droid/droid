@@ -87,12 +87,6 @@ export const ArrowUp = (p: IconProps) => (
   </svg>
 )
 
-export const Spark = (p: IconProps) => (
-  <svg {...base(p)}>
-    <path d="M12 3v4M12 17v4M3 12h4M17 12h4M12 8.5a3.5 3.5 0 0 0 3.5 3.5A3.5 3.5 0 0 0 12 15.5 3.5 3.5 0 0 0 8.5 12 3.5 3.5 0 0 0 12 8.5Z" />
-  </svg>
-)
-
 export const Terminal = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="m5 8 4 4-4 4M12 16h7" />
@@ -105,8 +99,3 @@ export const Dot = (p: IconProps) => (
   </svg>
 )
 
-export const Command = (p: IconProps) => (
-  <svg {...base(p)}>
-    <path d="M9 6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6Z" />
-  </svg>
-)

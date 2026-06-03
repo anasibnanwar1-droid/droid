@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { StepKind, TimelineItem } from '../data'
 import { timeline } from '../data'
-import { ArrowUp, ChevronDown, ChevronRight, GitBranch, Spark, Command } from '../icons'
+import { ArrowUp, ChevronDown, ChevronRight, GitBranch } from '../icons'
 
 const stepMeta: Record<StepKind, { label: string; color: string }> = {
   plan: { label: 'Plan', color: 'text-step-plan' },
@@ -138,7 +138,7 @@ export default function RunView() {
             </span>
           </div>
           <div className="mt-1 flex items-center gap-2 text-[12px] text-ink-muted">
-            <span className="font-mono">forge/api</span>
+            <span className="font-mono">droid/api</span>
             <span className="text-ink-faint">·</span>
             <span className="inline-flex items-center gap-1 font-mono">
               <GitBranch width={13} height={13} />
@@ -177,7 +177,6 @@ export default function RunView() {
             <div className="flex items-center justify-between pt-1.5">
               <div className="flex items-center gap-1.5">
                 <button className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[12px] font-medium text-ink-soft transition-colors hover:bg-surface-2">
-                  <Spark width={14} height={14} className="text-accent" />
                   Claude Sonnet 4.6
                   <ChevronDown width={13} height={13} className="text-ink-muted" />
                 </button>
@@ -186,11 +185,10 @@ export default function RunView() {
                 </button>
               </div>
               <div className="flex items-center gap-2">
-                <span className="hidden items-center gap-1 text-[11px] text-ink-faint sm:flex">
-                  <Command width={12} height={12} />
-                  + ↵ to send
+                <span className="hidden items-center gap-1 font-mono text-[11px] text-ink-faint sm:flex">
+                  ⌘ + ↵ to send
                 </span>
-                <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-bg transition-colors hover:bg-accent-hover">
+                <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-ink transition-colors hover:bg-accent-hover">
                   <ArrowUp width={17} height={17} strokeWidth={2.2} />
                 </button>
               </div>
