@@ -1,6 +1,6 @@
 import { store, useStore } from '../client/store'
 import { statusMeta, timeAgo } from '../lib/ui'
-import { Folder, Plus, ChevronDown, Dot } from '../icons'
+import { Folder, Plus, ChevronDown } from '../icons'
 
 export function Sidebar({ onNewTask, onOpenSettings }: { onNewTask: () => void; onOpenSettings: () => void }) {
   const projects = useStore((s) => s.projects)
@@ -86,8 +86,11 @@ export function Sidebar({ onNewTask, onOpenSettings }: { onNewTask: () => void; 
                           {s.title}
                         </span>
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] text-[var(--color-ink-faint)]">
-                        <Dot width={8} height={8} style={{ color: meta.dot }} />
+                      <span className="flex items-center gap-1.5 text-[11px] text-[var(--color-ink-faint)]">
+                        <span
+                          className="rounded-full"
+                          style={{ width: 7, height: 7, border: `1.5px solid ${meta.dot}` }}
+                        />
                         <span style={{ color: meta.color }}>{meta.label}</span>
                         <span className="text-[var(--color-ink-faint)]">· {timeAgo(s.updatedAt)}</span>
                       </span>
@@ -110,8 +113,12 @@ export function Sidebar({ onNewTask, onOpenSettings }: { onNewTask: () => void; 
         </button>
         <span className="flex items-center gap-1.5 text-[11px] text-[var(--color-ink-faint)]">
           <span
-            className="h-1.5 w-1.5 rounded-full"
-            style={{ background: connected ? 'var(--color-success)' : 'var(--color-error)' }}
+            className="rounded-full"
+            style={{
+              width: 7,
+              height: 7,
+              border: `1.5px solid ${connected ? 'var(--color-success)' : 'var(--color-error)'}`,
+            }}
           />
           {connected ? 'Connected' : 'Offline'}
         </span>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { store, useStore } from '../client/store'
 import { eventMeta, statusMeta } from '../lib/ui'
-import { ArrowUp, Dot, Spinner, Stop } from '../icons'
+import { ArrowUp, Spinner, Stop } from '../icons'
 import type { AgentEvent, Turn } from '../../shared/protocol'
 
 export function TaskThread() {
@@ -122,8 +122,8 @@ function EventRow({ event }: { event: AgentEvent }) {
   const mono = event.kind === 'command' || event.kind === 'stdout' || event.kind === 'stderr'
   return (
     <div className="animate-fade-up flex gap-2.5">
-      <div className="mt-1.5 flex w-3 shrink-0 justify-center">
-        <span className="h-1.5 w-1.5 rounded-full" style={{ background: meta.color }} />
+      <div className="mt-[7px] flex w-3 shrink-0 justify-center">
+        <span className="rounded-full" style={{ width: 6, height: 6, border: `1.5px solid ${meta.color}` }} />
       </div>
       <div className="min-w-0 flex-1">
         <span className="text-[12px] font-medium" style={{ color: meta.color }}>
@@ -161,7 +161,7 @@ function StatusPill({ status }: { status: Turn['status'] }) {
       className="flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium"
       style={{ borderColor: 'var(--color-line)', color: meta.color }}
     >
-      <Dot width={8} height={8} style={{ color: meta.dot }} />
+      <span className="rounded-full" style={{ width: 7, height: 7, border: `1.5px solid ${meta.dot}` }} />
       {meta.label}
     </span>
   )

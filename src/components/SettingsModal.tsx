@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { store, useStore } from '../client/store'
-import { Check, Dot } from '../icons'
+import { Check } from '../icons'
 
 export function SettingsModal({ onClose }: { onClose: () => void }) {
   const providers = useStore((s) => s.providers)
@@ -47,7 +47,14 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
                   className="flex items-center gap-1.5 text-[11.5px]"
                   style={{ color: p.available ? 'var(--color-success)' : 'var(--color-ink-faint)' }}
                 >
-                  <Dot width={8} height={8} />
+                  <span
+                    className="rounded-full"
+                    style={{
+                      width: 7,
+                      height: 7,
+                      border: `1.5px solid ${p.available ? 'var(--color-success)' : 'var(--color-ink-faint)'}`,
+                    }}
+                  />
                   {p.available ? 'Available' : 'Not found'}
                 </span>
               </li>
